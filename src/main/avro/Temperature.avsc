@@ -3,7 +3,7 @@
  "name": "Temperature",
  "fields": [
      {"name": "date", "type": "string"},
-     {"name": "maxTemp",  "type": "float"},
+     {"name": "maxTemp",  "type": "float", "order":"descending"},
      {"name": "minTemp", "type": "float"},
      {"name": "averageTemp","type":"float" }
  ]

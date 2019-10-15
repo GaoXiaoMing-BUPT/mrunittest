@@ -22,7 +22,7 @@ public class TemperatureMapper extends Mapper<LongWritable, Text, Text, Text> {
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
-        String[] data = StringUtils.split(line, " ");
+        String[] data = StringUtils.split(line, "\\s");
         String date = data[0];
         float todayTemperature = Float.parseFloat(data[1]);
         float yesterdayTemperature = Float.parseFloat(data[2]);

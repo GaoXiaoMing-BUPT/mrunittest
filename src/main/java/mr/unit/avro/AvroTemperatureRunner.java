@@ -12,8 +12,12 @@ import hdfsutil.HdfsUtil;
 import org.apache.avro.Schema;
 
 
+import org.apache.avro.file.DataFileReader;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumReader;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyOutputFormat;
+import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -28,15 +32,19 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class AvroTemperatureRunner extends Configured implements Tool {
+    private static boolean isLocal = true;
     private static Schema SCHEMA = new Schema.Parser().parse("{\"namespace\": \"mr.unit.avro\",\n" +
             " \"type\": \"record\",\n" +
             " \"name\": \"Temperature\",\n" +
             " \"fields\": [\n" +
             "     {\"name\": \"date\", \"type\": \"string\"},\n" +
-            "     {\"name\": \"maxTemp\",  \"type\": \"float\"},\n" +
+            "     {\"name\": \"maxTemp\",  \"type\": \"float\", \"order\":\"descending\"},\n" +
             "     {\"name\": \"minTemp\", \"type\": \"float\"},\n" +
             "     {\"name\": \"averageTemp\",\"type\":\"float\" }\n" +
             " ]\n" +
@@ -44,9 +52,10 @@ public class AvroTemperatureRunner extends Configured implements Tool {
     private static final Log logger = LogFactory.getLog(AvroTemperatureRunner.class);
     public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new AvroTemperatureRunner(), args);
-        HdfsUtil hdfsUtil = new HdfsUtil();
-        if (res == 0)
-            hdfsUtil.printFileContent("\\avroOutput\\part-r-00000.avro",10);
+        if (res == 0) {
+            if (isLocal)
+                avroDeSerializeNoneGenerateCode("output\\part-r-00000.avro");
+        }
         System.exit(res);
 
     }
@@ -55,8 +64,11 @@ public class AvroTemperatureRunner extends Configured implements Tool {
     public int run(String[] args) throws Exception {
 
         Configuration conf = new Configuration();
-/*        conf.set("mapreduce.framework.name","local");
-        conf.set("fs.defaultFS","file:///");//本地调试*/
+        if (isLocal) {
+            conf.set("mapreduce.framework.name", "local");
+            conf.set("fs.defaultFS", "file:///");//本地调试
+        }
+
         conf.setBoolean(Job.MAPREDUCE_JOB_USER_CLASSPATH_FIRST,true);
         /* 导入外部依赖项 */
         addTmpJar("G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-1.8.2.jar",conf);
@@ -84,18 +96,21 @@ public class AvroTemperatureRunner extends Configured implements Tool {
 
         job.setOutputValueClass(AvroGenericMaxTemperature.AvroReducer.class);
 
-/*        FileInputFormat.setInputPaths(job,new Path("G:\\IDEAProject\\mrunittest\\temperature.txt"));
-        FileOutputFormat.setOutputPath(job,new Path("G:\\IDEAProject\\mrunittest\\ouput"));*/
-        HdfsUtil hdfsUtil = new HdfsUtil();
-        String filename = "\\avroOutput";
-        Path path = new Path(filename);
-        if (hdfsUtil.rmdir(filename))
+        if (isLocal) {
+            FileInputFormat.setInputPaths(job, new Path("G:\\IDEAProject\\mrunittest\\temperature.txt"));
+            FileOutputFormat.setOutputPath(job, new Path("G:\\IDEAProject\\mrunittest\\output"));
+        } else
         {
-            logger.info(filename+" delete success");
-        }
+            HdfsUtil hdfsUtil = new HdfsUtil();
+            String filename = "\\avroOutput";
+            Path path = new Path(filename);
+            if (hdfsUtil.rmdir(filename)) {
+                logger.info(filename + " delete success");
+            }
 
-        FileInputFormat.setInputPaths(job,new Path("\\avroInput"));
-        FileOutputFormat.setOutputPath(job,path);
+            FileInputFormat.setInputPaths(job, new Path("\\avroInput"));
+            FileOutputFormat.setOutputPath(job, path);
+        }
 
         int exitCode = job.waitForCompletion(true)?0:1;
 
@@ -111,6 +126,24 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         } else {
             conf.set("tmpjars", tmpjars + "," + newJarPath);
         }
+    }
 
+    /*
+     *   Temperature 序列化数据读取
+     * */
+    private static void avroDeSerializeNoneGenerateCode(String filename) throws IOException {
+        File file = new File(filename);
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+        //DatumReader<GenericRecord> datumReader = new SpecificDatumReader<>();
+        //DatumReader<GenericRecord> datumReader = new GenericDatumReader<>();
+        DatumReader<GenericRecord> datumReader = new ReflectDatumReader<>();
+        DataFileReader<GenericRecord> dataFileReader = new DataFileReader<GenericRecord>(file, datumReader);
+        Iterator<GenericRecord> iterator = dataFileReader.iterator();
+        while (iterator.hasNext()) {
+            GenericRecord genericRecord = iterator.next();
+            System.out.println(genericRecord);
+        }
     }
 }

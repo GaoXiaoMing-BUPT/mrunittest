@@ -119,12 +119,13 @@ public class HdfsUtil {
     }
 
     public void printFileContent(String srcFile) throws IOException {
-        Path srcPath = new Path(srcFile);//???¡¤??
-        FSDataInputStream in = fs.open(srcPath);//?????¡¤??
+        Path srcPath = new Path(srcFile);
+        FSDataInputStream in = fs.open(srcPath);
         Scanner scanner = new Scanner(in);
         while (scanner.hasNext()) {
             System.out.println(scanner.nextLine());
         }
         scanner.close();
     }
+
 }

@@ -12,6 +12,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.mapred.AvroValue;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -29,7 +30,7 @@ public class AvroGenericMaxTemperature {
             " \"name\": \"Temperature\",\n" +
             " \"fields\": [\n" +
             "     {\"name\": \"date\", \"type\": \"string\"},\n" +
-            "     {\"name\": \"maxTemp\",  \"type\": \"float\"},\n" +
+            "     {\"name\": \"maxTemp\",  \"type\": \"float\", \"order\":\"descending\"},\n" +
             "     {\"name\": \"minTemp\", \"type\": \"float\"},\n" +
             "     {\"name\": \"averageTemp\",\"type\":\"float\" }\n" +
             " ]\n" +
@@ -41,6 +42,8 @@ public class AvroGenericMaxTemperature {
 
             String line = value.toString();//new String(value.getBytes(),0,value.getLength(),"UTF-16");
             String[] fields = line.split("\\t");
+            if (fields.length != 3)
+                System.out.println(line);
             String date = fields[0];
             float maxTemp = Float.parseFloat(fields[1]);
             float minTemp = Float.parseFloat(fields[2]);
@@ -48,7 +51,8 @@ public class AvroGenericMaxTemperature {
             genericRecord.put("maxTemp",maxTemp);
             genericRecord.put("minTemp",minTemp);
             genericRecord.put("averageTemp",(maxTemp+minTemp)/2);
-            context.write(new AvroKey<>(date), new AvroValue<>(genericRecord));
+            /* 进行排序时直接当做key,然后在schema文件中设定想要的顺序即可 */
+            context.write(new AvroKey<>(genericRecord.toString()), new AvroValue<>(genericRecord));
         }
     }
     /* reduce人输出 AvroKey 及 Null */

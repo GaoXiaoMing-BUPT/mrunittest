@@ -93,6 +93,7 @@ public class AvroDemo {
         dataFileWriter.append(user2);
         dataFileWriter.close();
 
+
     }
     private static void avroDeSerializeNoneGenerateCode() throws IOException {
         File file = new File("src\\main\\avro\\user2.avro");

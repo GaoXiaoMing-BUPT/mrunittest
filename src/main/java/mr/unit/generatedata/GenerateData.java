@@ -27,8 +27,7 @@ public class GenerateData {
             double maxT = -1;
             double minT = 0;
             for(int j = 0; j < 3 ; j++)
-                name += "a";
-                //name += word.charAt((int)(Math.random()*26));
+                name += word.charAt((int) (Math.random() * 3));
             while(maxT < minT){
                 maxT = (int)(Math.random()*500)/10.0;
                 minT =  (int)(Math.random()*300)/10.0;
