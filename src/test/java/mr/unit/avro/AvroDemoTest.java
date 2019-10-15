@@ -69,8 +69,8 @@ public class AvroDemoTest {
         dataFileWriter.create(user1.getSchema(),file);
         dataFileWriter.append(user1);
         dataFileWriter.append(user2);
-        dataFileWriter.close();
 
+        dataFileWriter.close();
 
         DatumReader<GenericRecord> datumReader = new SpecificDatumReader<>();
         DataFileReader<GenericRecord> dataFileReader = new DataFileReader<GenericRecord>(file,datumReader);

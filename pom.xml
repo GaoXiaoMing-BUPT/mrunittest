@@ -48,11 +48,7 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.7.7</version>
-        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
@@ -84,6 +80,17 @@
             <scope>test</scope>
             <classifier>hadoop2</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-mapred</artifactId>
+            <version>1.8.2</version>
+            <classifier>hadoop2</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.2</version>
+        </dependency>
 
     </dependencies>
 
@@ -92,7 +99,7 @@
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
-                <version>1.7.7</version>
+                <version>1.8.2</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -119,5 +126,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
