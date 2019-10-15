@@ -67,6 +67,13 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         if (isLocal) {
             conf.set("mapreduce.framework.name", "local");
             conf.set("fs.defaultFS", "file:///");//本地调试
+            //删除本地文件
+            if (delFile(new File("output")))
+                logger.info("delete local output success");
+            else {
+                logger.error("delete local output fail");
+                System.exit(1);
+            }
         }
 
         conf.setBoolean(Job.MAPREDUCE_JOB_USER_CLASSPATH_FIRST,true);
@@ -145,5 +152,20 @@ public class AvroTemperatureRunner extends Configured implements Tool {
             GenericRecord genericRecord = iterator.next();
             System.out.println(genericRecord);
         }
+    }
+
+    private static boolean delFile(File file) {
+        if (!file.exists()) {
+            logger.error(file + "not exist");
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                delFile(f);
+            }
+        }
+        return file.delete();
     }
 }
