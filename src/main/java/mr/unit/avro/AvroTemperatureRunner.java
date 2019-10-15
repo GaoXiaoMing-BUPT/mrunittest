@@ -58,6 +58,7 @@ public class AvroTemperatureRunner extends Configured implements Tool {
 /*        conf.set("mapreduce.framework.name","local");
         conf.set("fs.defaultFS","file:///");//本地调试*/
         conf.setBoolean(Job.MAPREDUCE_JOB_USER_CLASSPATH_FIRST,true);
+        /* 导入外部依赖项 */
         addTmpJar("G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-1.8.2.jar",conf);
         addTmpJar("G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-mapred-1.8.2-hadoop2.jar",conf);
         addTmpJar( "G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-ipc-1.8.2.jar" , conf);
@@ -76,7 +77,6 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         AvroJob.setMapOutputKeySchema(job, Schema.create(Schema.Type.STRING));
         AvroJob.setMapOutputValueSchema(job,SCHEMA);
         AvroJob.setOutputKeySchema(job,SCHEMA);
-
         job.setOutputValueClass(NullWritable.class);
 
         job.setInputFormatClass(TextInputFormat.class);
