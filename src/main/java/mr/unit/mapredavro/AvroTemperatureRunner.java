@@ -6,9 +6,10 @@
  * To change this template use File | Settings | File Templates.
  * Description:
  **/
-package mr.unit.avro;
+package mr.unit.mapredavro;
 
 import hdfsutil.HdfsUtil;
+import mr.unit.avro.AvroGenericMaxTemperature;
 import org.apache.avro.Schema;
 
 
@@ -38,7 +39,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class AvroTemperatureRunner extends Configured implements Tool {
-    private static boolean isLocal = true;
+    private static boolean isLocal = false;
     private static Schema SCHEMA = new Schema.Parser().parse("{\"namespace\": \"mr.unit.avro\",\n" +
             " \"type\": \"record\",\n" +
             " \"name\": \"Temperature\",\n" +
@@ -72,15 +73,15 @@ public class AvroTemperatureRunner extends Configured implements Tool {
                 logger.info("delete local output success");
             else {
                 logger.error("delete local output fail");
-                System.exit(1);
+                //System.exit(1);
             }
         }
 
         conf.setBoolean(Job.MAPREDUCE_JOB_USER_CLASSPATH_FIRST,true);
         /* 导入外部依赖项 */
-        addTmpJar("G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-1.8.2.jar",conf);
-        addTmpJar("G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-mapred-1.8.2-hadoop2.jar",conf);
-        addTmpJar( "G:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-ipc-1.8.2.jar" , conf);
+        addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-1.8.2.jar", conf);
+        addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-mapred-1.8.2-hadoop2.jar", conf);
+        addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-ipc-1.8.2.jar", conf);
         Job job = Job.getInstance(conf);
         job.setJar("out\\artifacts\\mrunittest_jar\\mrunittest.jar");
         job.setJarByClass(AvroTemperatureRunner.class);
@@ -104,8 +105,8 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         job.setOutputValueClass(AvroGenericMaxTemperature.AvroReducer.class);
 
         if (isLocal) {
-            FileInputFormat.setInputPaths(job, new Path("G:\\IDEAProject\\mrunittest\\temperature.txt"));
-            FileOutputFormat.setOutputPath(job, new Path("G:\\IDEAProject\\mrunittest\\output"));
+            FileInputFormat.setInputPaths(job, new Path("E:\\IDEAProject\\mrunittest\\temperature.txt"));
+            FileOutputFormat.setOutputPath(job, new Path("E:\\IDEAProject\\mrunittest\\output"));
         } else
         {
             HdfsUtil hdfsUtil = new HdfsUtil();
