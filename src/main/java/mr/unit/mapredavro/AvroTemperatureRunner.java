@@ -67,8 +67,8 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         Configuration conf = new Configuration();
         if (isLocal) {
             conf.set("mapreduce.framework.name", "local");
-            conf.set("fs.defaultFS", "file:///");//æœ¬åœ°è°ƒè¯•
-            //åˆ é™¤æœ¬åœ°æ–‡ä»¶
+            conf.set("fs.defaultFS", "file:///");//±¾µØµ÷ÊÔ
+            //É¾³ı±¾µØÎÄ¼ş
             if (delFile(new File("output")))
                 logger.info("delete local output success");
             else {
@@ -78,7 +78,7 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         }
 
         conf.setBoolean(Job.MAPREDUCE_JOB_USER_CLASSPATH_FIRST,true);
-        /* å¯¼å…¥å¤–éƒ¨ä¾èµ–é¡¹ */
+        /* µ¼ÈëÍâ²¿ÒÀÀµÏî */
         addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-1.8.2.jar", conf);
         addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-mapred-1.8.2-hadoop2.jar", conf);
         addTmpJar("E:/IDEAProject/mrunittest/out/artifacts/mrunittest_jar/avro-ipc-1.8.2.jar", conf);
@@ -86,14 +86,14 @@ public class AvroTemperatureRunner extends Configured implements Tool {
         job.setJar("out\\artifacts\\mrunittest_jar\\mrunittest.jar");
         job.setJarByClass(AvroTemperatureRunner.class);
 
-        job.setJobName("learning avro");
+        job.setJobName("Ñ§Ï°Avro");
 
         job.setMapperClass(AvroGenericMaxTemperature.AvroMapper.class);
         job.setReducerClass(AvroGenericMaxTemperature.AvroReducer.class);
 
         job.setUser("gxm");
-        /* åŒºåˆ« */
-        /* è®¾ç½® ä»»åŠ¡çš„Avro map key-valueè¾“å‡ºæ ¼å¼ è®¾ç½®reducerçš„keyè¾“å…¥Schema  å³avscæ–‡ä»¶çš„è§£æ */
+        /* Çø±ğ */
+        /* ÉèÖÃ ÈÎÎñµÄAvro map key-valueÊä³ö¸ñÊ½ ÉèÖÃreducerµÄkeyÊäÈëSchema  ¼´avscÎÄ¼şµÄ½âÎö */
         AvroJob.setMapOutputKeySchema(job, Schema.create(Schema.Type.STRING));
         AvroJob.setMapOutputValueSchema(job,SCHEMA);
         AvroJob.setOutputKeySchema(job,SCHEMA);
@@ -137,7 +137,7 @@ public class AvroTemperatureRunner extends Configured implements Tool {
     }
 
     /*
-     *   Temperature åºåˆ—åŒ–æ•°æ®è¯»å–
+     *   Temperature ĞòÁĞ»¯Êı¾İ¶ÁÈ¡
      * */
     private static void avroDeSerializeNoneGenerateCode(String filename) throws IOException {
         File file = new File(filename);
